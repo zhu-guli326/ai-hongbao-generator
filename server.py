@@ -258,7 +258,6 @@ def catch_all(path):
 app.debug = False
 
 # 导出应用实例供Vercel使用
-app = app
 application = app
 
 if __name__ == '__main__':
