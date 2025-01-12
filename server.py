@@ -244,8 +244,17 @@ def home():
         logger.error(f"加载主页失败: {str(e)}")
         return str(e), 500
 
+@app.route('/<path:path>')
+def catch_all(path):
+    try:
+        return render_template('index.html')
+    except Exception as e:
+        logger.error(f"加载页面失败: {str(e)}")
+        return str(e), 500
+
+# Vercel 需要的应用实例
+app.debug = False
+application = app
+
 if __name__ == '__main__':
-    app.run()
-else:
-    # 这是为了 Vercel 部署
-    app = app 
+    app.run() 
