@@ -11,9 +11,8 @@ import threading
 
 # 设置更详细的日志
 logging.basicConfig(
-    level=logging.DEBUG,
-    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
-    encoding='utf-8'
+    level=logging.INFO,
+    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s'
 )
 logger = logging.getLogger(__name__)
 
@@ -22,7 +21,7 @@ app = Flask(__name__)
 CORS(app, resources={r"/*": {"origins": "*"}}, supports_credentials=True)
 
 # 配置API密钥
-API_KEY = "171991b2c95145a78b2e4807e098d7d2.me7koT1vDiusM7mV"
+API_KEY = os.getenv('API_KEY', "171991b2c95145a78b2e4807e098d7d2.me7koT1vDiusM7mV")
 client = ZhipuAI(api_key=API_KEY)
 
 # 设置模型名称和图片尺寸为常量
@@ -246,4 +245,7 @@ def home():
         return str(e), 500
 
 if __name__ == '__main__':
-    app.run() 
+    app.run()
+else:
+    # 这是为了 Vercel 部署
+    app = app 

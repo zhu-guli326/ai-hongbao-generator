@@ -1,0 +1,566 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI 图像与视频生成 - 新春特别版</title>
+    <style>
+        body {
+            font-family: 'PingFang SC', 'Microsoft YaHei', sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #8B0000;
+            background-image: 
+                radial-gradient(circle at 50% 50%, #FF4500 0%, transparent 20%),
+                radial-gradient(circle at 80% 80%, #FF6347 0%, transparent 20%),
+                radial-gradient(circle at 20% 20%, #FF6347 0%, transparent 20%),
+                linear-gradient(45deg, #8B0000 0%, #B22222 100%);
+            background-attachment: fixed;
+            color: #8B0000;
+            position: relative;
+            min-height: 100vh;
+            box-sizing: border-box;
+        }
+
+        body::before {
+            content: "";
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-image: 
+                url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext x='50' y='50' font-size='40' text-anchor='middle' dy='.35em' fill='rgba(255,215,0,0.1)' font-family='serif'%3E福%3C/text%3E%3C/svg%3E"),
+                url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext x='50' y='50' font-size='30' text-anchor='middle' dy='.35em' fill='rgba(255,215,0,0.1)' font-family='serif'%3E春%3C/text%3E%3C/svg%3E");
+            background-size: 50px 50px, 40px 40px;
+            animation: snowfall 20s linear infinite;
+            pointer-events: none;
+            opacity: 0.3;
+        }
+
+        @keyframes snowfall {
+            0% {
+                background-position: 0 0, 25px 25px;
+            }
+            100% {
+                background-position: 50px 500px, 75px 525px;
+            }
+        }
+
+        .container {
+            background-color: rgba(255, 0, 0, 0.95);
+            background-image: 
+                linear-gradient(135deg, rgba(255, 69, 0, 0.9) 0%, rgba(139, 0, 0, 0.9) 100%),
+                url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='40' height='40' viewBox='0 0 100 100'%3E%3Ctext x='50' y='50' font-size='50' text-anchor='middle' dy='.35em' fill='rgba(255,215,0,0.1)' font-family='serif'%3E囍%3C/text%3E%3C/svg%3E");
+            padding: 30px;
+            border-radius: 20px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+            position: relative;
+            overflow: hidden;
+            animation: redPacketGlow 2s infinite;
+            backdrop-filter: blur(10px);
+            border: 2px solid rgba(255, 215, 0, 0.3);
+        }
+
+        @keyframes redPacketGlow {
+            0% { box-shadow: 0 4px 20px rgba(139, 0, 0, 0.3); }
+            50% { box-shadow: 0 4px 30px rgba(255, 69, 0, 0.5); }
+            100% { box-shadow: 0 4px 20px rgba(139, 0, 0, 0.3); }
+        }
+
+        .container::before {
+            content: "福";
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            font-size: 40px;
+            color: #FFD700;
+            opacity: 0.3;
+            writing-mode: vertical-rl;
+            text-orientation: upright;
+        }
+
+        h1 {
+            text-align: center;
+            color: #FFD700;
+            margin-bottom: 30px;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+            font-size: 28px;
+            position: relative;
+            animation: titleFloat 3s ease-in-out infinite;
+        }
+
+        @keyframes titleFloat {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+        }
+
+        .input-group {
+            margin-bottom: 20px;
+            position: relative;
+        }
+
+        textarea {
+            width: 100%;
+            padding: 15px;
+            border: 2px solid #FFD700;
+            border-radius: 12px;
+            resize: vertical;
+            min-height: 100px;
+            font-size: 16px;
+            box-sizing: border-box;
+            background-color: rgba(255, 255, 255, 0.9);
+            color: #8B0000;
+            transition: all 0.3s ease;
+        }
+
+        textarea:focus {
+            outline: none;
+            border-color: #FFA500;
+            box-shadow: 0 0 10px rgba(255, 215, 0, 0.5);
+        }
+
+        button {
+            background: linear-gradient(45deg, #FFD700, #FFA500);
+            color: #8B0000;
+            border: none;
+            padding: 15px 30px;
+            border-radius: 12px;
+            cursor: pointer;
+            font-size: 18px;
+            font-weight: bold;
+            width: 100%;
+            margin-bottom: 20px;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(255, 215, 0, 0.4);
+        }
+
+        button:active {
+            transform: translateY(1px);
+        }
+
+        button::after {
+            content: "";
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: linear-gradient(45deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+            transform: rotate(45deg);
+            animation: buttonShine 3s infinite;
+        }
+
+        @keyframes buttonShine {
+            0% { transform: translateX(-100%) rotate(45deg); }
+            100% { transform: translateX(100%) rotate(45deg); }
+        }
+
+        .result-container {
+            margin-top: 30px;
+            text-align: center;
+            background: rgba(255, 255, 255, 0.1);
+            padding: 20px;
+            border-radius: 12px;
+            backdrop-filter: blur(5px);
+        }
+
+        .media-container {
+            position: relative;
+            cursor: pointer;
+        }
+
+        #generatedImage, #videoPlayer {
+            max-width: 100%;
+            border-radius: 12px;
+            margin-top: 20px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+            border: 3px solid #FFD700;
+            transition: transform 0.3s ease;
+            cursor: pointer;
+        }
+
+        #generatedImage:hover, #videoPlayer:hover {
+            transform: scale(1.02);
+        }
+
+        .status {
+            margin-top: 15px;
+            padding: 12px;
+            border-radius: 12px;
+            background-color: rgba(255, 215, 0, 0.1);
+            color: #FFD700;
+            text-align: center;
+            font-weight: bold;
+        }
+
+        .error {
+            color: #FFD700;
+            margin-top: 15px;
+            padding: 12px;
+            border-radius: 12px;
+            background-color: rgba(139, 0, 0, 0.3);
+            border: 1px solid #FFD700;
+        }
+
+        .loading {
+            display: inline-block;
+            width: 24px;
+            height: 24px;
+            border: 3px solid #FFD700;
+            border-top: 3px solid transparent;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin-right: 10px;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        /* 添加红包装饰元素 */
+        .decoration {
+            position: absolute;
+            width: 30px;
+            height: 30px;
+            background: #FFD700;
+            border-radius: 50%;
+            opacity: 0.2;
+        }
+
+        .decoration:nth-child(1) {
+            top: 20px;
+            left: 20px;
+            animation: float 4s ease-in-out infinite;
+        }
+
+        .decoration:nth-child(2) {
+            bottom: 20px;
+            right: 20px;
+            animation: float 4s ease-in-out infinite 1s;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translate(0, 0); }
+            50% { transform: translate(10px, -10px); }
+        }
+
+        /* 全屏遮罩层 */
+        .fullscreen-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.9);
+            z-index: 1000;
+            cursor: pointer;
+        }
+
+        /* 全屏图片样式 */
+        .fullscreen-media {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            max-width: 95vw;
+            max-height: 95vh;
+            object-fit: contain;
+            z-index: 1001;
+        }
+
+        /* 关闭按钮 */
+        .close-button {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            width: 40px;
+            height: 40px;
+            background: rgba(255, 215, 0, 0.8);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            z-index: 1002;
+            font-size: 24px;
+            color: #8B0000;
+            border: none;
+            transition: all 0.3s ease;
+        }
+
+        .close-button:hover {
+            background: #FFD700;
+            transform: rotate(90deg);
+        }
+
+        /* 放大提示 */
+        .zoom-hint {
+            position: absolute;
+            bottom: 10px;
+            right: 10px;
+            background: rgba(255, 215, 0, 0.8);
+            padding: 5px 10px;
+            border-radius: 15px;
+            font-size: 12px;
+            color: #8B0000;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .media-container:hover .zoom-hint {
+            opacity: 1;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="decoration"></div>
+        <div class="decoration"></div>
+        <h1>🧧 AI 图像与视频生成 - 新春特别版 🧧</h1>
+        
+        <div class="input-group">
+            <textarea id="prompt" placeholder="在此输入图像描述，让AI为您送上新春祝福..."></textarea>
+        </div>
+        <button id="generateButton" onclick="generateImage()">✨ 生成新春图像 ✨</button>
+        
+        <div class="result-container">
+            <div id="imageStatus" class="status hidden">
+                <div class="loading"></div>正在为您生成新春图像...
+            </div>
+            <div id="imageError" class="error hidden"></div>
+            <div class="media-container">
+                <img id="generatedImage" class="hidden" alt="生成的新春图像" onclick="openFullscreen(this)">
+                <div class="zoom-hint">点击放大查看</div>
+            </div>
+            
+            <button id="generateVideoButton" class="hidden" onclick="generateVideo()">🎊 生成新春视频 🎊</button>
+            
+            <div id="videoStatus" class="status hidden">
+                <div class="loading"></div>正在为您生成新春视频...
+            </div>
+            <div id="videoError" class="error hidden"></div>
+            <div class="media-container">
+                <video id="videoPlayer" class="hidden" controls onclick="openFullscreen(this)">
+                    您的浏览器不支持视频播放。
+                </video>
+                <div class="zoom-hint">点击放大查看</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 添加全屏遮罩层 -->
+    <div id="fullscreenOverlay" class="fullscreen-overlay">
+        <button class="close-button" onclick="closeFullscreen()">×</button>
+        <img id="fullscreenImage" class="fullscreen-media" src="" alt="全屏图片">
+        <video id="fullscreenVideo" class="fullscreen-media" controls style="display: none;">
+            您的浏览器不支持视频播放。
+        </video>
+    </div>
+
+    <script>
+        let currentImageUrl = '';
+        let videoCheckInterval = null;
+
+        async function generateImage() {
+            const prompt = document.getElementById('prompt').value.trim();
+            if (!prompt) {
+                showError('imageError', '请输入图像描述');
+                return;
+            }
+
+            resetUI();
+            showElement('imageStatus');
+
+            try {
+                const response = await fetch('/generate-image', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ prompt })
+                });
+
+                const data = await response.json();
+                if (data.error) {
+                    throw new Error(data.error);
+                }
+
+                currentImageUrl = data.url;
+                const img = document.getElementById('generatedImage');
+                img.src = currentImageUrl;
+                img.onload = () => {
+                    hideElement('imageStatus');
+                    showElement('generatedImage');
+                    showElement('generateVideoButton');
+                };
+            } catch (error) {
+                showError('imageError', error.message);
+                hideElement('imageStatus');
+            }
+        }
+
+        async function generateVideo() {
+            if (!currentImageUrl) {
+                showError('videoError', '请先生成图像');
+                return;
+            }
+
+            hideElement('videoError');
+            showElement('videoStatus');
+            hideElement('videoPlayer');
+
+            try {
+                const response = await fetch('/generate-video', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        image_url: currentImageUrl,
+                        prompt: document.getElementById('prompt').value.trim()
+                    })
+                });
+
+                const data = await response.json();
+                if (data.error) {
+                    throw new Error(data.error);
+                }
+
+                if (data.task_id) {
+                    startVideoStatusCheck(data.task_id);
+                }
+            } catch (error) {
+                showError('videoError', error.message);
+                hideElement('videoStatus');
+            }
+        }
+
+        function startVideoStatusCheck(taskId) {
+            if (videoCheckInterval) {
+                clearInterval(videoCheckInterval);
+            }
+
+            videoCheckInterval = setInterval(async () => {
+                try {
+                    const response = await fetch(`/check-video-status/${taskId}`);
+                    const data = await response.json();
+
+                    if (data.error) {
+                        throw new Error(data.error);
+                    }
+
+                    if (data.status === 'completed') {
+                        clearInterval(videoCheckInterval);
+                        hideElement('videoStatus');
+                        const video = document.getElementById('videoPlayer');
+                        video.src = data.video_url;
+                        showElement('videoPlayer');
+                    } else if (data.status === 'failed') {
+                        throw new Error('视频生成失败');
+                    }
+                } catch (error) {
+                    clearInterval(videoCheckInterval);
+                    showError('videoError', error.message);
+                    hideElement('videoStatus');
+                }
+            }, 5000);
+        }
+
+        function resetUI() {
+            hideElement('imageError');
+            hideElement('videoError');
+            hideElement('generatedImage');
+            hideElement('generateVideoButton');
+            hideElement('videoStatus');
+            hideElement('videoPlayer');
+            if (videoCheckInterval) {
+                clearInterval(videoCheckInterval);
+            }
+        }
+
+        function showElement(id) {
+            const element = document.getElementById(id);
+            if (element) {
+                element.classList.remove('hidden');
+            }
+        }
+
+        function hideElement(id) {
+            const element = document.getElementById(id);
+            if (element) {
+                element.classList.add('hidden');
+            }
+        }
+
+        function showError(id, message) {
+            const element = document.getElementById(id);
+            if (element) {
+                element.textContent = message;
+                element.classList.remove('hidden');
+            }
+        }
+
+        // 添加全屏查看功能
+        function openFullscreen(element) {
+            const overlay = document.getElementById('fullscreenOverlay');
+            const fullscreenImage = document.getElementById('fullscreenImage');
+            const fullscreenVideo = document.getElementById('fullscreenVideo');
+
+            if (element.tagName === 'IMG') {
+                fullscreenImage.src = element.src;
+                fullscreenImage.style.display = 'block';
+                fullscreenVideo.style.display = 'none';
+            } else if (element.tagName === 'VIDEO') {
+                fullscreenVideo.src = element.src;
+                fullscreenVideo.style.display = 'block';
+                fullscreenImage.style.display = 'none';
+                fullscreenVideo.currentTime = element.currentTime;
+                fullscreenVideo.play();
+            }
+
+            overlay.style.display = 'block';
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closeFullscreen() {
+            const overlay = document.getElementById('fullscreenOverlay');
+            const fullscreenVideo = document.getElementById('fullscreenVideo');
+            
+            if (fullscreenVideo.style.display !== 'none') {
+                const mainVideo = document.getElementById('videoPlayer');
+                mainVideo.currentTime = fullscreenVideo.currentTime;
+                if (!fullscreenVideo.paused) {
+                    mainVideo.play();
+                }
+            }
+            
+            overlay.style.display = 'none';
+            document.body.style.overflow = 'auto';
+        }
+
+        // 点击遮罩层关闭全屏
+        document.getElementById('fullscreenOverlay').addEventListener('click', function(e) {
+            if (e.target === this) {
+                closeFullscreen();
+            }
+        });
+
+        // ESC 键关闭全屏
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape') {
+                closeFullscreen();
+            }
+        });
+    </script>
+</body>
+</html> 
