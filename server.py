@@ -21,7 +21,9 @@ app = Flask(__name__)
 CORS(app, resources={r"/*": {"origins": "*"}}, supports_credentials=True)
 
 # 配置API密钥
-API_KEY = os.getenv('API_KEY', "171991b2c95145a78b2e4807e098d7d2.me7koT1vDiusM7mV")
+api_key_id = os.getenv('API_KEY_ID', '171991b2c95145a78b2e4807e098d7d2')
+api_key_secret = os.getenv('API_KEY_SECRET', 'me7koT1vDiusM7mV')
+API_KEY = f"{api_key_id}.{api_key_secret}"
 client = ZhipuAI(api_key=API_KEY)
 
 # 设置模型名称和图片尺寸为常量
@@ -252,9 +254,14 @@ def catch_all(path):
         logger.error(f"加载页面失败: {str(e)}")
         return str(e), 500
 
-# Vercel 需要的应用实例
+# Vercel serverless配置
 app.debug = False
+
+# 导出应用实例供Vercel使用
+app = app
 application = app
 
 if __name__ == '__main__':
-    app.run() 
+    # 本地开发时使用
+    port = int(os.environ.get('PORT', 5000))
+    app.run(host='0.0.0.0', port=port) 
